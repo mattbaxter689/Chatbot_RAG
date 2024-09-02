@@ -1,0 +1,25 @@
+version: "3"
+services:
+  vectordb:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    restart: no
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+     test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+     interval: 5s
+     retries: 5
+    networks:
+     - vectornetwork 
+
+networks:
+  vectornetwork:
+    name: vectornetwork
